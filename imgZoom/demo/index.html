@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery图片放大镜插件</title>
+    <style type="text/css">
+        img{display: block;}
+        .imgBox{width: 300px;height: 300px;border: 1px solid #CCC;}
+    </style>
+    <script type="text/javascript" src="../../jquery-1.12.3.min.js"></script>
+    <script type="text/javascript" src="../jquery.imgzoom.js"></script>
+</head>
+<body>
+    <div class="imgBox"><img src="small.jpg" data-origin="big.jpg"></div>
+
+    <script type="text/javascript">
+        $('.imgBox').imgZoom({
+            boxWidth: 400,
+            boxHeight: 400,
+            marginLeft: 5,
+            origin: 'data-origin'
+        });
+    </script>
+</body>
+</html>

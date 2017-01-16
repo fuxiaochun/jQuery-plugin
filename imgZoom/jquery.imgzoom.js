@@ -1,14 +1,18 @@
 /**
- * [图片放大镜]
+ * [图片放大镜jquery插件]
  * @Author: Fu Xiaochun
- * @Email:  fuzhengchun@gomeplus.com
+ * @Email:  f2e.xiaochun@gmail.com
+ * @Link:   www.fuxiaochun.com
  */
+
 function ImgZoom(options) {
     this.opts = options;
     this.$el = options.$el;
     this.$sImg = options.$el.find('img');
     this.$zoomDiv = null;
     this.$bigImg = null;
+    this.boxWidth = options.boxWidth;
+    this.boxHeight = options.boxHeight;
     this.imgWidth = 0;
     this.imgHeight = 0;
     this.$mask = null;
@@ -16,7 +20,6 @@ function ImgZoom(options) {
     this.maskHeight = 0;
     this.elWidth = 0;
     this.elHeight = 0;
-    this.flag = true;
     this._init();
 }
 ImgZoom.prototype = {
@@ -25,53 +28,52 @@ ImgZoom.prototype = {
         this.$el.css('position', 'relative');
         this.bindEvent();
     },
-    createHTML: function() {
-        var _this = this;
-        var boxWidth = this.opts.boxWidth;
-        var boxHeight = this.opts.boxHeight;
+    _createZoomDiv: function() {
+        var boxWidth = this.boxWidth;
+        var boxHeight = this.boxHeight;
+
+        this.$zoomDiv || (this.$zoomDiv = $('<div/>'));
+        var offset = this.$el.offset();
+        var zoomDivLeft = offset.left / 1 + this.$el.outerWidth(true) / 1 + this.opts.marginLeft / 1;
+        var zoomDivTop = offset.top / 1;
+        this.$bigImg.css('position', 'absolute');
+        this.$zoomDiv.append(this.$bigImg);
+        this.$zoomDiv.css({
+            position: 'absolute',
+            left: zoomDivLeft,
+            top: zoomDivTop,
+            zIndex: 999,
+            width: boxWidth,
+            height: boxHeight,
+            overflow: 'hidden',
+            border: '1px solid #eee',
+            background: '#FFF'
+        });
+        $('body').append(this.$zoomDiv);
+    },
+    _createMask: function() {
+        var boxWidth = this.boxWidth;
+        var boxHeight = this.boxHeight;
         this.elWidth = this.$el.outerWidth(true);
         this.elHeight = this.$el.outerHeight(true);
 
-        createZoomDiv();
-        createMask();
-
-        function createZoomDiv() {
-            _this.$zoomDiv || (_this.$zoomDiv = $('<div/>'));
-            var offset = _this.$el.offset();
-            var zoomDivLeft = offset.left / 1 + _this.$el.outerWidth(true) / 1 + _this.opts.marginLeft / 1;
-            var zoomDivTop = offset.top / 1;
-            _this.$bigImg.css('position', 'absolute');
-            _this.$zoomDiv.append(_this.$bigImg);
-            _this.$zoomDiv.css({
-                position: 'absolute',
-                left: zoomDivLeft,
-                top: zoomDivTop,
-                zIndex: 999,
-                width: boxWidth,
-                height: boxHeight,
-                overflow: 'hidden',
-                border: '1px solid #eee',
-                background: '#FFF'
-            });
-            $('body').append(_this.$zoomDiv);
-        }
-
-        function createMask() {
-            _this.maskWidth = Math.ceil(boxWidth / _this.imgWidth * _this.elWidth);
-            _this.maskHeight = Math.ceil(boxHeight / _this.imgHeight * _this.elHeight);
-            _this.maskWidth > _this.elWidth && (_this.maskWidth = _this.elWidth);
-            _this.maskHeight > _this.elHeight && (_this.maskHeight = _this.elHeight);
-            _this.$mask || (_this.$mask = $('<div/>'));
-            _this.$mask.css({
-                position: 'absolute',
-                background: 'rgba(238,130,34,.4) url("' + $_CONFIG.imgpath + '/images/shop/move.png") no-repeat center',
-                width: _this.maskWidth,
-                height: _this.maskHeight,
-                cursor: 'none'
-            });
-            _this.$el.append(_this.$mask);
-        }
-
+        this.maskWidth = Math.ceil(boxWidth / this.imgWidth * this.elWidth);
+        this.maskHeight = Math.ceil(boxHeight / this.imgHeight * this.elHeight);
+        this.maskWidth > this.elWidth && (this.maskWidth = this.elWidth);
+        this.maskHeight > this.elHeight && (this.maskHeight = this.elHeight);
+        this.$mask || (this.$mask = $('<div/>'));
+        this.$mask.css({
+            position: 'absolute',
+            background: 'rgba(238,130,34,.4)',
+            width: this.maskWidth,
+            height: this.maskHeight,
+            cursor: 'move'
+        });
+        this.$el.append(this.$mask);
+    },
+    createHTML: function() {
+        this._createZoomDiv();
+        this._createMask();
     },
     bindEvent: function() {
         var _this = this;
